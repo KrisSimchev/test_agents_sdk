@@ -1,13 +1,17 @@
 import os
-import openai
-
-openai.api_key = os.getenv("OPENAI_API_KEY")
+from agents import Agent, Runner
 
 
 def main():
-    if not openai.api_key:
+    if not os.getenv("OPENAI_API_KEY"):
         raise RuntimeError("Please set the OPENAI_API_KEY environment variable.")
-    messages = []
+
+    agent = Agent(
+        name="Assistant",
+        instructions="You are a helpful assistant",
+    )
+
+    result = None
     print("Type 'exit' or 'quit' to stop the chat.")
     while True:
         try:
@@ -17,14 +21,18 @@ def main():
             break
         if user_input.lower() in {"exit", "quit"}:
             break
-        messages.append({"role": "user", "content": user_input})
-        response = openai.ChatCompletion.create(
-            model="gpt-3.5-turbo",
-            messages=messages,
+
+        context = result.context_wrapper.context if result else None
+        previous_id = result.last_response_id if result else None
+
+        result = Runner.run_sync(
+            agent,
+            input=user_input,
+            context=context,
+            previous_response_id=previous_id,
         )
-        reply = response["choices"][0]["message"]["content"].strip()
-        messages.append({"role": "assistant", "content": reply})
-        print("Assistant:", reply)
+
+        print("Assistant:", result.final_output)
 
 
 if __name__ == "__main__":
