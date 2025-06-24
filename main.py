@@ -2,7 +2,7 @@ import os
 import json
 import openai
 from prompts import SYSTEM_PROMPT
-from functions import track_order, add_to_email_list, create_agent
+from functions import track_order, add_to_email_list, search_products, create_agent
 
 
 def main():
@@ -40,6 +40,8 @@ def main():
                 result = track_order(**args)
             elif name == "add_to_email_list":
                 result = add_to_email_list(**args)
+            elif name == "search_products":
+                result = search_products(**args)
             else:
                 result = f"No handler for {name}"
             messages.append({"role": "function", "name": name, "content": result})
