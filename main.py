@@ -1,17 +1,14 @@
 import os
-from agents import Agent, Runner
+from agents import Runner
+from functions import create_agent
 
 
-def main():
+def main() -> None:
     if not os.getenv("OPENAI_API_KEY"):
         raise RuntimeError("Please set the OPENAI_API_KEY environment variable.")
 
-    agent = Agent(
-        name="Assistant",
-        instructions="You are a helpful assistant",
-    )
+    agent = create_agent()
 
-    result = None
     print("Type 'exit' or 'quit' to stop the chat.")
     while True:
         try:
@@ -22,16 +19,7 @@ def main():
         if user_input.lower() in {"exit", "quit"}:
             break
 
-        context = result.context_wrapper.context if result else None
-        previous_id = result.last_response_id if result else None
-
-        result = Runner.run_sync(
-            agent,
-            input=user_input,
-            context=context,
-            previous_response_id=previous_id,
-        )
-
+        result = Runner.run_sync(agent, input=user_input)
         print("Assistant:", result.final_output)
 
 
