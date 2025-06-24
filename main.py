@@ -20,8 +20,3 @@ def main() -> None:
             break
 
         result = Runner.run_sync(agent, input=user_input)
-        print("Assistant:", result.final_output)
-
-
-if __name__ == "__main__":
-    main()
